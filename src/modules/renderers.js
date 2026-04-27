@@ -96,5 +96,45 @@ export const ModuleRenderers = {
         <footer class="bg-rpg-black border-t border-rpg-cyan/20 py-12 px-6 text-center">
             <p contenteditable="${isEditing}" oninput="Actions.updateModule('${m.id}', 'text', this.innerText)" class="text-sm text-gray-500">${m.text}</p>
         </footer>
-    `
+    `,
+
+    notepad: (m, isEditing) => {
+        if (!m.tabs || m.tabs.length === 0) return '';
+        const activeTabIdx = m.activeTab || 0;
+        const activeTab = m.tabs[activeTabIdx];
+
+        return `
+        <section class="py-20 px-6 max-w-5xl mx-auto relative group/module">
+            <h2 ${isEditing ? `contenteditable="true" onblur="Actions.updateModule('${m.id}', 'title', this.innerText)"` : ''} 
+                class="text-3xl font-bold text-rpg-cyan mb-8 text-center font-['Cinzel']">${m.title}</h2>
+            
+            <div class="flex flex-col md:flex-row gap-6 bg-rpg-slate/30 border border-rpg-cyan/20 rounded-lg p-6 shadow-2xl">
+                <!-- Sidebar / Tabs -->
+                <div class="md:w-1/4 border-b md:border-b-0 md:border-r border-rpg-cyan/20 pb-4 md:pb-0 md:pr-4 flex flex-col gap-2">
+                    <h3 class="text-xs uppercase tracking-widest text-rpg-silver/50 mb-2 font-bold">Páginas</h3>
+                    ${m.tabs.map((tab, idx) => `
+                        <div class="flex items-center justify-between group/tab relative">
+                            <button onclick="Actions.switchNotepadTab('${m.id}', ${idx})" 
+                                class="flex-grow text-left text-sm p-2 rounded transition-colors ${activeTabIdx === idx ? 'bg-rpg-cyan/20 text-rpg-cyan border border-rpg-cyan/50' : 'text-rpg-silver hover:bg-white/5'}">
+                                ${isEditing ? `<span contenteditable="true" onblur="Actions.updateArrayItem('${m.id}', 'tabs', ${idx}, 'title', this.innerText)" onclick="event.stopPropagation()">${tab.title}</span>` : tab.title}
+                            </button>
+                            ${isEditing && m.tabs.length > 1 ? `<button onclick="Actions.deleteNotepadTab('${m.id}', ${idx})" class="text-red-500 bg-rpg-black/80 absolute right-0 p-1 text-xs hover:bg-red-500/20 rounded z-10">✕</button>` : ''}
+                        </div>
+                    `).join('')}
+                    ${isEditing ? `<button onclick="Actions.addNotepadTab('${m.id}')" class="mt-4 p-2 text-xs text-rpg-cyan border border-rpg-cyan/30 rounded hover:bg-rpg-cyan/10 transition-colors">+ Nova Página</button>` : ''}
+                </div>
+
+                <!-- Content Area -->
+                <div class="md:w-3/4 min-h-[300px]">
+                    <div class="prose prose-invert max-w-none text-rpg-silver prose-ul:list-disc prose-ul:pl-6 prose-li:mb-2 prose-p:mb-4">
+                        <div ${isEditing ? `contenteditable="true" onblur="Actions.updateArrayItem('${m.id}', 'tabs', ${activeTabIdx}, 'content', this.innerHTML)"` : ''} 
+                             class="outline-none focus:ring-1 focus:ring-rpg-cyan/50 rounded p-2 transition-all">
+                            ${activeTab.content}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        `;
+    }
 };

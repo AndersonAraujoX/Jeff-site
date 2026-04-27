@@ -72,6 +72,7 @@ export const Actions = {
             cards: { title: 'Destaques', items: [{title: 'Item 1', text: '...'}] },
             gallery: { title: 'Galeria', images: [] },
             characters: { title: 'Personagens', list: [] },
+            notepad: { title: 'Lore & Arquivos', activeTab: 0, tabs: [{ title: 'Página 1', content: '<ul><li>Anotação importante 1</li><li>Anotação importante 2</li></ul>' }] },
             cta: { title: 'Entre na Jornada', btnText: 'Começar', link: '#' },
             footer: { text: '© 2026 RPG Builder' }
         };
@@ -140,5 +141,36 @@ export const Actions = {
     triggerUpload: (id, key, idx = null, subKey = null) => {
         context.currentImageTarget = { id, key, idx, subKey };
         document.getElementById('imageInput').click();
+    },
+
+    // --- Notepad Specific ---
+    switchNotepadTab: (id, tabIdx) => {
+        const mod = getActiveModules().find(m => m.id === id);
+        if (mod && mod.type === 'notepad') {
+            mod.activeTab = tabIdx;
+            Store.save().then(() => Render.all());
+        }
+    },
+    
+    addNotepadTab: (id) => {
+        const mod = getActiveModules().find(m => m.id === id);
+        if (mod && mod.type === 'notepad') {
+            mod.tabs.push({ title: 'Nova Página', content: '<ul><li>...</li></ul>' });
+            mod.activeTab = mod.tabs.length - 1;
+            Store.save().then(() => Render.all());
+        }
+    },
+
+    deleteNotepadTab: (id, tabIdx) => {
+        if (confirm('Deletar esta página do bloco de notas?')) {
+            const mod = getActiveModules().find(m => m.id === id);
+            if (mod && mod.type === 'notepad') {
+                mod.tabs.splice(tabIdx, 1);
+                if (mod.activeTab >= mod.tabs.length) {
+                    mod.activeTab = Math.max(0, mod.tabs.length - 1);
+                }
+                Store.save().then(() => Render.all());
+            }
+        }
     }
 };

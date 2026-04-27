@@ -6,7 +6,7 @@ export const Render = {
     all: () => {
         // Apply settings
         if (state.settings && state.settings.primaryColor) {
-            document.documentElement.style.setProperty('--color-primary', state.settings.primaryColor);
+            document.documentElement.style.setProperty('--primary-color', state.settings.primaryColor);
             const picker = document.getElementById('primary-color-picker');
             if (picker && picker.value !== state.settings.primaryColor) {
                 picker.value = state.settings.primaryColor;
