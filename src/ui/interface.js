@@ -58,6 +58,42 @@ export const Render = {
                 </div>
             `).join('');
         }
+
+        const moduleListContainer = document.getElementById('sidebar-module-list');
+        if (moduleListContainer) {
+            const modules = getActiveModules();
+            if (modules.length === 0) {
+                moduleListContainer.innerHTML = '<p class="text-xs text-rpg-silver/50 italic">Nenhum módulo nesta página.</p>';
+            } else {
+                moduleListContainer.innerHTML = modules.map((m, idx) => {
+                    // Type to Emoji/Name mapping
+                    const typeMap = {
+                        'hero': { icon: '🖼️', name: 'Hero' },
+                        'text': { icon: '📝', name: 'Texto' },
+                        'cards': { icon: '🎴', name: 'Cards' },
+                        'gallery': { icon: '📷', name: 'Galeria' },
+                        'characters': { icon: '🎭', name: 'Personagens' },
+                        'notepad': { icon: '📓', name: 'Bloco de Notas' },
+                        'cta': { icon: '🔗', name: 'Botão' },
+                        'footer': { icon: '🏁', name: 'Rodapé' }
+                    };
+                    const info = typeMap[m.type] || { icon: '📦', name: 'Módulo' };
+                    
+                    return `
+                        <div class="flex items-center justify-between p-2 bg-black/40 rounded border border-white/5 text-sm">
+                            <span class="flex items-center gap-2 text-rpg-silver truncate w-2/3" title="${m.title || info.name}">
+                                <span>${info.icon}</span> <span class="truncate">${m.title || info.name}</span>
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <button onclick="Actions.moveModule('${m.id}', -1)" class="p-1 hover:text-white text-rpg-cyan" title="Mover para cima" ${idx === 0 ? 'disabled class="opacity-30"' : ''}>↑</button>
+                                <button onclick="Actions.moveModule('${m.id}', 1)" class="p-1 hover:text-white text-rpg-cyan" title="Mover para baixo" ${idx === modules.length - 1 ? 'disabled class="opacity-30"' : ''}>↓</button>
+                                <button onclick="Actions.deleteModule('${m.id}')" class="p-1 hover:text-red-400 text-red-500 ml-1" title="Deletar Módulo">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
     },
 
     navbar: () => {
