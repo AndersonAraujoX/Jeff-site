@@ -2,11 +2,11 @@
 import { state } from './state.js';
 
 const DOC_PATH = 'sites/main-site';
-const db = firebase.firestore();
+const getDb = () => firebase.firestore();
 
 export const Store = {
     save: () => {
-        return db.doc(DOC_PATH).set({ 
+        return getDb().doc(DOC_PATH).set({ 
             modules: state.modules, 
             settings: state.settings 
         }).catch(err => {
@@ -16,7 +16,7 @@ export const Store = {
     },
 
     listen: (callback) => {
-        db.doc(DOC_PATH).onSnapshot(doc => {
+        getDb().doc(DOC_PATH).onSnapshot(doc => {
             if (doc.exists()) {
                 const data = doc.data();
                 state.modules = data.modules || [];

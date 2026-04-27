@@ -11,3 +11,6 @@ const firebaseConfig = {
 
 // Global config for our app
 window.FIREBASE_CONFIG = firebaseConfig;
+
+// Initialize Firebase immediately
+firebase.initializeApp(firebaseConfig);
