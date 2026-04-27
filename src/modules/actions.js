@@ -3,23 +3,20 @@ import { state, context, getActiveModules } from '../core/state.js';
 import { Store } from '../core/store.js';
 import { Render } from '../ui/interface.js';
 
+const findMod = (id) => getActiveModules().find(m => m.id === id);
+
 export const Actions = {
     // --- UI Controls ---
     toggleEdit: () => {
         if (!state.isEditing) {
             const pwd = prompt("Acesso restrito. Digite a senha:");
-            if (pwd !== "02yU/+Q71I@9") {
-                alert("Senha incorreta!");
-                return;
-            }
+            if (pwd !== "02yU/+Q71I@9") return alert("Senha incorreta!");
         }
 
         state.isEditing = !state.isEditing;
         document.body.classList.toggle('editing-mode', state.isEditing);
         const sidebar = document.getElementById('editor-sidebar');
-        if (sidebar) {
-            sidebar.style.transform = state.isEditing ? 'translateX(0)' : 'translateX(100%)';
-        }
+        if (sidebar) sidebar.style.transform = state.isEditing ? 'translateX(0)' : 'translateX(100%)';
         Render.all();
     },
 
@@ -31,16 +28,13 @@ export const Actions = {
     // --- Page Management ---
     createPage: () => {
         const title = prompt("Nome da nova página:");
-        if (title) {
-            const pageId = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
-            if (!state.pages[pageId]) {
-                state.pages[pageId] = { title, modules: [] };
-                state.currentPage = pageId;
-                Store.save().then(() => Render.all());
-            } else {
-                alert("Já existe uma página com esse nome!");
-            }
-        }
+        if (!title) return;
+        const pageId = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        if (state.pages[pageId]) return alert("Já existe uma página com esse nome!");
+        
+        state.pages[pageId] = { title, modules: [] };
+        state.currentPage = pageId;
+        Store.save().then(() => Render.all());
     },
 
     switchPage: (pageId) => {
@@ -61,7 +55,7 @@ export const Actions = {
 
     // --- Module Management ---
     updateModule: (id, key, val) => {
-        const mod = getActiveModules().find(m => m.id === id);
+        const mod = findMod(id);
         if (mod) { mod[key] = val; Store.save(); }
     },
 
@@ -76,8 +70,7 @@ export const Actions = {
             cta: { title: 'Entre na Jornada', btnText: 'Começar', link: '#' },
             footer: { text: '© 2026 RPG Builder' }
         };
-        const modules = getActiveModules();
-        modules.push({ id: 'mod_' + Date.now(), type, ...defaults[type] });
+        getActiveModules().push({ id: 'mod_' + Date.now(), type, ...defaults[type] });
         Store.save();
     },
 
@@ -100,7 +93,7 @@ export const Actions = {
 
     // --- Array Item Management ---
     updateArrayItem: (id, arrayKey, idx, key, val) => {
-        const mod = getActiveModules().find(m => m.id === id);
+        const mod = findMod(id);
         if (mod && mod[arrayKey][idx]) { 
             mod[arrayKey][idx][key] = val; 
             Store.save(); 
@@ -108,7 +101,7 @@ export const Actions = {
     },
 
     addArrayItem: (id, key, defaultVal) => {
-        const mod = getActiveModules().find(m => m.id === id);
+        const mod = findMod(id);
         if (mod) {
             if (!mod[key]) mod[key] = [];
             mod[key].push(defaultVal);
@@ -117,7 +110,7 @@ export const Actions = {
     },
 
     moveArrayItem: (id, arrayKey, idx, dir) => {
-        const mod = getActiveModules().find(m => m.id === id);
+        const mod = findMod(id);
         if (mod && mod[arrayKey]) {
             const newIdx = idx + dir;
             if (newIdx >= 0 && newIdx < mod[arrayKey].length) {
@@ -129,7 +122,7 @@ export const Actions = {
 
     deleteArrayItem: (id, arrayKey, idx) => {
         if (confirm('Deletar este item?')) {
-            const mod = getActiveModules().find(m => m.id === id);
+            const mod = findMod(id);
             if (mod && mod[arrayKey]) {
                 mod[arrayKey].splice(idx, 1);
                 Store.save();
@@ -145,16 +138,16 @@ export const Actions = {
 
     // --- Notepad Specific ---
     switchNotepadTab: (id, tabIdx) => {
-        const mod = getActiveModules().find(m => m.id === id);
-        if (mod && mod.type === 'notepad') {
+        const mod = findMod(id);
+        if (mod?.type === 'notepad') {
             mod.activeTab = tabIdx;
             Store.save().then(() => Render.all());
         }
     },
     
     addNotepadTab: (id) => {
-        const mod = getActiveModules().find(m => m.id === id);
-        if (mod && mod.type === 'notepad') {
+        const mod = findMod(id);
+        if (mod?.type === 'notepad') {
             mod.tabs.push({ title: 'Nova Página', content: '<ul><li>...</li></ul>' });
             mod.activeTab = mod.tabs.length - 1;
             Store.save().then(() => Render.all());
@@ -163,12 +156,10 @@ export const Actions = {
 
     deleteNotepadTab: (id, tabIdx) => {
         if (confirm('Deletar esta página do bloco de notas?')) {
-            const mod = getActiveModules().find(m => m.id === id);
-            if (mod && mod.type === 'notepad') {
+            const mod = findMod(id);
+            if (mod?.type === 'notepad') {
                 mod.tabs.splice(tabIdx, 1);
-                if (mod.activeTab >= mod.tabs.length) {
-                    mod.activeTab = Math.max(0, mod.tabs.length - 1);
-                }
+                mod.activeTab = Math.max(0, Math.min(mod.activeTab, mod.tabs.length - 1));
                 Store.save().then(() => Render.all());
             }
         }

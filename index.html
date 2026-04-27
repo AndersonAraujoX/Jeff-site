@@ -52,62 +52,9 @@
 
     <!-- EDITOR SIDEBAR -->
     <div id="editor-sidebar" class="fixed top-0 right-0 w-80 h-full bg-rpg-slate/95 backdrop-blur-md z-[100] transform translate-x-full transition-transform duration-300 border-l border-rpg-cyan/30 flex flex-col shadow-2xl">
-        <div class="p-6 pb-2 border-b border-rpg-cyan/20">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-rpg-cyan">Live Builder</h2>
-                <button id="close-editor" onclick="Actions.toggleEdit()" class="text-rpg-silver hover:text-white">✕</button>
-            </div>
-            <!-- Tabs -->
-            <div class="flex gap-2 text-xs font-bold uppercase tracking-widest">
-                <button onclick="document.getElementById('tab-pages').style.display='block'; document.getElementById('tab-modules').style.display='none'; this.classList.add('text-rpg-cyan', 'border-rpg-cyan'); this.classList.remove('text-rpg-silver/50', 'border-transparent'); this.nextElementSibling.classList.add('text-rpg-silver/50', 'border-transparent'); this.nextElementSibling.classList.remove('text-rpg-cyan', 'border-rpg-cyan');" class="flex-1 pb-2 border-b-2 text-rpg-cyan border-rpg-cyan transition-colors">Páginas</button>
-                <button onclick="document.getElementById('tab-modules').style.display='block'; document.getElementById('tab-pages').style.display='none'; this.classList.add('text-rpg-cyan', 'border-rpg-cyan'); this.classList.remove('text-rpg-silver/50', 'border-transparent'); this.previousElementSibling.classList.add('text-rpg-silver/50', 'border-transparent'); this.previousElementSibling.classList.remove('text-rpg-cyan', 'border-rpg-cyan');" class="flex-1 pb-2 border-b-2 text-rpg-silver/50 border-transparent transition-colors">+ Módulos</button>
-            </div>
-        </div>
-        
-        <div class="p-6 flex-grow overflow-y-auto space-y-4 custom-scrollbar">
-            <!-- TAB 1: Pages & Settings -->
-            <div id="tab-pages" style="display: block;">
-                <div class="mb-6">
-                    <label class="block text-sm font-medium mb-1">Cor do Tema</label>
-                    <input type="color" id="primary-color-picker" onchange="Actions.changeColor(this.value)" class="w-full h-10 rounded bg-transparent border border-rpg-cyan/30 cursor-pointer">
-                </div>
-                
-                <div class="pt-4 border-t border-rpg-cyan/10">
-                    <!-- Page Manager -->
-                    <div class="mb-8 border-b border-rpg-cyan/20 pb-6">
-                        <h3 class="text-rpg-cyan text-xs uppercase tracking-widest font-bold mb-4">Gerenciar Páginas</h3>
-                        <div id="sidebar-page-list" class="mb-4"></div>
-                        <button onclick="Actions.createPage()" class="w-full py-2 bg-rpg-cyan/10 hover:bg-rpg-cyan/20 text-rpg-cyan border border-rpg-cyan/30 rounded text-sm transition-colors">
-                            + Criar Nova Página
-                        </button>
-                    </div>
+        <!-- Content injected by Render.sidebar() -->
+    </div>
 
-                    <!-- Active Modules List -->
-                    <div class="mb-2">
-                        <h3 class="text-rpg-cyan text-xs uppercase tracking-widest font-bold mb-4">Módulos na Página</h3>
-                        <div id="sidebar-module-list" class="space-y-2"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: Add Modules -->
-            <div id="tab-modules" style="display: none;">
-                <h3 class="text-sm font-bold uppercase tracking-wider text-rpg-cyan/50 mb-3">Escolha um Módulo</h3>
-                <div class="flex flex-col gap-2 p-2">
-                    <button onclick="Actions.addModule('hero')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>🖼️</span> Hero (Cabeçalho)</button>
-                    <button onclick="Actions.addModule('text')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>📝</span> Texto / Lore</button>
-                    <button onclick="Actions.addModule('cards')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>🎴</span> Cards (Destaques)</button>
-                    <button onclick="Actions.addModule('gallery')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>📷</span> Galeria de Imagens</button>
-                    <button onclick="Actions.addModule('characters')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>🎭</span> Personagens</button>
-                    <button onclick="Actions.addModule('notepad')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>📓</span> Bloco de Notas (Tabs)</button>
-                    <button onclick="Actions.addModule('cta')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow"><span>🔗</span> Botão de Ação / Link</button>
-                    <button onclick="Actions.addModule('footer')" class="p-3 bg-black/40 hover:bg-rpg-cyan/10 border border-white/5 hover:border-rpg-cyan/30 rounded flex items-center gap-3 text-sm text-rpg-silver transition-all shadow mt-4 border-t-white/10"><span>🏁</span> Rodapé</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 border-t border-rpg-cyan/20 bg-black/20">
-            <div class="flex items-center justify-center gap-2 text-[10px] text-rpg-cyan/50 uppercase font-bold">
                     <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     Sincronização Ativa
                 </div>

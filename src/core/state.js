@@ -3,6 +3,7 @@ export const state = {
     isEditing: false,
     pages: {}, 
     currentPage: 'home',
+    sidebarTab: 'pages', // 'pages' or 'modules'
     settings: { primaryColor: '#66FCF1' }
 };
 
