@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Site Builder - Kuar-Tor Style</title>
+    <title>RPG Live Builder - Real-time Collaboration</title>
     
-    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,215 +23,78 @@
         }
     </script>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto+Slab:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-rpg-black text-rpg-silver overflow-x-hidden">
 
-    <!-- EDITOR OVERLAY (Hidden by default) -->
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay" class="fixed inset-0 z-[200] bg-rpg-black flex items-center justify-center transition-opacity duration-500">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-rpg-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-rpg-cyan font-bold tracking-widest uppercase">Conectando ao Vazio...</p>
+        </div>
+    </div>
+
+    <!-- EDITOR SIDEBAR -->
     <div id="editor-sidebar" class="fixed top-0 right-0 w-80 h-full bg-rpg-slate/95 backdrop-blur-md z-[100] transform translate-x-full transition-transform duration-300 border-l border-rpg-cyan/30 p-6 flex flex-col gap-6 shadow-2xl">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-rpg-cyan">Editor de RPG</h2>
+            <h2 class="text-xl font-bold text-rpg-cyan">Live Builder</h2>
             <button id="close-editor" class="text-rpg-silver hover:text-white">✕</button>
         </div>
         
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium mb-1">Cor Primária</label>
+                <label class="block text-sm font-medium mb-1">Cor do Tema</label>
                 <input type="color" id="primary-color-picker" class="w-full h-10 rounded bg-transparent border border-rpg-cyan/30 cursor-pointer">
             </div>
             
             <div class="pt-4 border-t border-rpg-cyan/10">
-                <h3 class="text-sm font-bold uppercase tracking-wider text-rpg-cyan/50 mb-3">Ações</h3>
-                <button id="save-local" class="w-full bg-rpg-cyan text-rpg-black font-bold py-2 px-4 rounded hover:bg-white transition-colors mb-2">Salvar Rascunho</button>
-                <button id="export-html" class="w-full border border-rpg-cyan text-rpg-cyan font-bold py-2 px-4 rounded hover:bg-rpg-cyan hover:text-rpg-black transition-colors">Exportar HTML</button>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-rpg-cyan/50 mb-3">Adicionar Módulo</h3>
+                <div class="flex flex-col gap-2 p-2">
+                    <button onclick="Actions.addModule('hero')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver"><span>🖼️</span> Hero</button>
+                    <button onclick="Actions.addModule('text')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver"><span>📝</span> Texto</button>
+                    <button onclick="Actions.addModule('cards')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver"><span>🎴</span> Cards</button>
+                    <button onclick="Actions.addModule('gallery')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver"><span>📷</span> Galeria</button>
+                    <button onclick="Actions.addModule('characters')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver"><span>🎭</span> Personagens</button>
+                    <button onclick="Actions.addModule('cta')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver"><span>🔗</span> Botão/Link</button>
+                    <button onclick="Actions.addModule('footer')" class="p-2 hover:bg-white/10 rounded flex items-center gap-2 text-sm text-rpg-silver border-t border-white/10 mt-2"><span>🏁</span> Rodapé</button>
+                </div>
             </div>
 
             <div class="pt-4 border-t border-rpg-cyan/10">
-                <p class="text-xs text-gray-500 italic">Dica: Clique em qualquer texto no site para editá-lo. Clique em imagens para mudar a URL.</p>
+                <div class="flex items-center gap-2 text-[10px] text-rpg-cyan/50 uppercase font-bold mb-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    Sincronização Ativa
+                </div>
+                <p class="text-[10px] text-gray-500 italic">As mudanças são salvas instantaneamente para todos os visitantes.</p>
             </div>
-        </div>
-        
-        <div class="mt-auto pt-6 text-center text-[10px] text-gray-600">
-            Powered by Antigravity AI
         </div>
     </div>
 
     <!-- FLOAT BUTTON -->
-    <button id="toggle-editor" class="fixed bottom-8 right-8 z-[101] bg-rpg-cyan text-rpg-black p-4 rounded-full shadow-lg shadow-cyan-500/50 hover:scale-110 transition-transform flex items-center justify-center">
+    <button id="toggle-editor" onclick="Actions.toggleEdit()" class="fixed bottom-8 right-8 z-[101] bg-rpg-cyan text-rpg-black p-4 rounded-full shadow-lg shadow-cyan-500/50 hover:scale-110 transition-transform">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
         </svg>
     </button>
 
-    <!-- SITE CONTENT -->
-    <div id="site-content">
-        <!-- HERO SECTION -->
-        <header id="hero" class="hero-bg h-screen flex flex-col items-center justify-center text-white relative">
-            <div class="absolute top-6 left-6 z-50">
-                <a href="#" class="bg-rpg-black/60 hover:bg-rpg-cyan hover:text-rpg-black border border-rpg-cyan text-rpg-cyan px-4 py-2 rounded font-bold transition-all no-underline">
-                    ← Voltar ao Menu
-                </a>
-            </div>
-            <div class="text-center bg-rpg-black/80 p-10 rounded-lg border border-rpg-cyan/30 backdrop-blur-sm">
-                <h1 data-key="hero-title" class="editable-text text-6xl md:text-8xl font-bold text-shadow text-rpg-cyan">Kuar-Tor</h1>
-                <p data-key="hero-subtitle" class="editable-text text-xl md:text-2xl mt-4 text-shadow text-rpg-silver">A Última Expedição</p>
-                <div class="w-32 h-1 bg-rpg-cyan mx-auto mt-6 rounded"></div>
-            </div>
-            
-            <!-- Hero Image Trigger -->
-            <div class="absolute inset-0 z-[-1] pointer-events-none">
-                 <div class="w-full h-full bg-cover bg-center bg-fixed transition-all duration-700" id="hero-image-display" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80');"></div>
-                 <div class="absolute inset-0 bg-gradient-to-b from-transparent via-rpg-black/50 to-rpg-black"></div>
-            </div>
-            <button class="image-editor-btn absolute bottom-10 right-10 bg-white/10 hover:bg-white/20 p-2 rounded text-xs backdrop-blur-md opacity-0 transition-opacity" data-target="hero-image-display">Mudar Fundo</button>
-        </header>
-
-        <main>
-            <!-- INTRODUÇÃO -->
-            <section id="intro" class="py-24 px-6 relative overflow-hidden">
-                <div class="max-w-4xl mx-auto text-center relative z-10">
-                    <h2 data-key="intro-title" class="editable-text text-4xl text-rpg-cyan mb-6">Uma Ilha Envolta em Mistério</h2>
-                    <div class="w-24 h-1 bg-rpg-cyan mx-auto mb-10 rounded"></div>
-                    <div data-key="intro-content" class="editable-text text-lg leading-relaxed space-y-4">
-                        <p>Kuar-Tor, outrora um próspero centro de inovação e poder, governado pelas três grandes famílias - os inventores Xang, os magos Yang e os guerreiros Zhauw - sucumbiu a uma catástrofe.</p>
-                        <p>Uma fenda para o Vazio foi aberta, corrompendo a terra e seus habitantes. Agora, apenas o silêncio e uma sinistra névoa escarlate reinam.</p>
-                    </div>
-                </div>
-                
-                <!-- Background decor -->
-                <div class="absolute -top-24 -left-24 w-96 h-96 bg-rpg-cyan/5 rounded-full blur-[100px]"></div>
-                <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-red-900/10 rounded-full blur-[100px]"></div>
-            </section>
-
-            <hr class="section-divider max-w-4xl mx-auto opacity-30">
-
-            <!-- PERSONAGENS -->
-            <section id="personagens" class="py-24 px-6">
-                <div class="max-w-5xl mx-auto">
-                    <h2 data-key="characters-title" class="editable-text text-4xl text-center text-rpg-cyan mb-6">Protagonistas do Desespero</h2>
-                    <div class="w-24 h-1 bg-rpg-cyan mx-auto mb-12 rounded"></div>
-
-                    <div class="card-bg rounded-xl p-10 space-y-12 shadow-2xl">
-                        <div class="grid md:grid-cols-2 gap-12 items-center">
-                            <div>
-                                <h3 data-key="cta-title" class="editable-text text-3xl text-rpg-cyan mb-4 font-bold">Crie seu Personagem</h3>
-                                <p data-key="cta-description" class="editable-text text-lg leading-relaxed mb-8 text-rpg-silver/80">
-                                    Sua jornada começa aqui. Use o link abaixo para acessar o formulário de criação de personagem e dar vida ao seu herói, pária ou sobrevivente.
-                                </p>
-                                <div class="flex flex-col sm:flex-row gap-4">
-                                    <a id="cta-button" href="https://andersonaraujox.github.io/RPG/Forms/formV2.2.html" target="_blank" class="btn-primary text-center px-8">
-                                        Criar Ficha de Personagem
-                                    </a>
-                                </div>
-                                <div class="mt-4 opacity-0 transition-opacity image-editor-btn text-xs" data-target="cta-button" data-type="link">
-                                    <button class="underline text-rpg-cyan">Editar Link do Botão</button>
-                                </div>
-                            </div>
-                            <div class="relative group">
-                                <img id="promo-image" src="https://images.unsplash.com/photo-1519074063912-ad25b5ce4409?auto=format&fit=crop&q=80" alt="Character Art" class="rounded-lg border border-rpg-cyan/20 shadow-lg transition-transform duration-500 group-hover:scale-105">
-                                <div class="absolute inset-0 bg-rpg-cyan/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                     <button class="image-editor-btn bg-rpg-black/80 px-4 py-2 rounded text-sm text-rpg-cyan border border-rpg-cyan" data-target="promo-image">Trocar Imagem</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid md:grid-cols-3 gap-8">
-                            <div class="p-6 rounded-lg bg-rpg-black/40 border border-white/5 hover:border-rpg-cyan/30 transition-colors">
-                                <h4 data-key="feature-1-title" class="editable-text text-xl text-rpg-cyan mb-3">Clãs Caídos</h4>
-                                <p data-key="feature-1-text" class="editable-text text-sm text-gray-400">Descendentes dos Xang, Yang ou Zhauw. Legados de poder e dor.</p>
-                            </div>
-                            <div class="p-6 rounded-lg bg-rpg-black/40 border border-white/5 hover:border-rpg-cyan/30 transition-colors">
-                                <h4 data-key="feature-2-title" class="editable-text text-xl text-rpg-cyan mb-3">Párias</h4>
-                                <p data-key="feature-2-text" class="editable-text text-sm text-gray-400">Criminosos e heróis esquecidos em uma missão sem volta.</p>
-                            </div>
-                            <div class="p-6 rounded-lg bg-rpg-black/40 border border-white/5 hover:border-rpg-cyan/30 transition-colors">
-                                <h4 data-key="feature-3-title" class="editable-text text-xl text-rpg-cyan mb-3">Idealistas</h4>
-                                <p data-key="feature-3-text" class="editable-text text-sm text-gray-400">Aqueles que ainda acreditam que este mundo pode ser salvo.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <hr class="section-divider max-w-4xl mx-auto opacity-30">
-
-            <!-- SESSÃO ZERO -->
-            <section id="sessao-zero" class="py-24 px-6 bg-gradient-to-b from-rpg-black to-rpg-slate/20">
-                <div class="max-w-5xl mx-auto">
-                    <h2 data-key="s0-title" class="editable-text text-4xl text-center text-rpg-cyan mb-6">Sessão Zero: O Julgamento</h2>
-                    <div class="w-24 h-1 bg-rpg-cyan mx-auto mb-16 rounded"></div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
-                        <!-- Imagem do Juiz -->
-                        <div class="md:col-span-4 sticky top-10">
-                            <div class="relative group">
-                                <img id="judge-image" src="https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80" alt="Juiz" class="rounded-lg shadow-2xl border-2 border-rpg-cyan/30 w-full grayscale hover:grayscale-0 transition-all duration-700">
-                                <div class="absolute inset-0 bg-rpg-cyan/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                    <button class="image-editor-btn bg-rpg-black/80 px-4 py-2 rounded text-sm text-rpg-cyan border border-rpg-cyan" data-target="judge-image">Mudar Juiz</button>
-                                </div>
-                            </div>
-                            <p class="text-center mt-4 text-xs italic text-gray-500">"O silêncio é a primeira resposta."</p>
-                        </div>
-
-                        <!-- Texto e Perguntas -->
-                        <div class="md:col-span-8 space-y-8">
-                            <div data-key="s0-narrative" class="editable-text text-lg italic text-rpg-silver/70 border-l-4 border-rpg-cyan/20 pl-6 leading-relaxed">
-                                <p>Vocês acordam em uma sala escura, o ar pesado com o cheiro de ozônio e poeira antiga. Acorrentados a uma cadeira de pedra fria, a única luz emana de um candelabro macabro...</p>
-                                <p class="mt-4">"Eu sou o Juiz das Quatro Faces," sua voz ecoa, parecendo vir de todas as direções ao mesmo tempo.</p>
-                            </div>
-
-                            <div class="space-y-6">
-                                <h3 class="text-2xl text-rpg-cyan font-bold flex items-center gap-3">
-                                    <span class="w-8 h-[2px] bg-rpg-cyan"></span>
-                                    O Interrogatório
-                                </h3>
-                                <div data-key="s0-questions" class="editable-text space-y-6">
-                                    <div class="p-4 rounded bg-white/5 border border-white/5">
-                                        <strong class="text-rpg-cyan block mb-1">Quem era você antes de tudo ruir?</strong>
-                                        <p class="text-sm text-gray-400">Defina sua origem e o que o levou à queda.</p>
-                                    </div>
-                                    <div class="p-4 rounded bg-white/5 border border-white/5">
-                                        <strong class="text-rpg-cyan block mb-1">O que o torna especial?</strong>
-                                        <p class="text-sm text-gray-400">Qual o seu maior talento ou maldição?</p>
-                                    </div>
-                                    <div class="p-4 rounded bg-white/5 border border-white/5">
-                                        <strong class="text-rpg-cyan block mb-1">Qual o seu maior segredo?</strong>
-                                        <p class="text-sm text-gray-400">Algo que o Vazio possa usar contra você.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- FOOTER -->
-        <footer id="aventura" class="bg-rpg-slate py-24 px-6 border-t border-rpg-cyan/20 relative overflow-hidden">
-            <div class="max-w-4xl mx-auto text-center relative z-10">
-                <h2 data-key="footer-title" class="editable-text text-4xl text-rpg-cyan mb-6">A Aventura Começa</h2>
-                <div class="w-24 h-1 bg-rpg-cyan mx-auto mb-10 rounded"></div>
-                <div data-key="footer-content" class="editable-text text-lg text-left text-gray-300 space-y-4 border-l-4 border-rpg-cyan pl-8 italic bg-rpg-black/20 p-8 rounded-r-lg">
-                    <p>A névoa escarlate se agarra ao casco do navio "Aventureiro Indomável", densa e com um cheiro metálico.</p>
-                    <p>"Bem-vindos a Kuar-Tor," diz a General Anya. "O trabalho de vocês começa agora."</p>
-                </div>
-            </div>
-            
-            <!-- Bottom decor -->
-            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rpg-cyan to-transparent"></div>
-        </footer>
+    <!-- MAIN MODULE CONTAINER -->
+    <div id="modulesContainer">
+        <!-- Modules will be rendered here -->
     </div>
 
-    <!-- Hidden File Input for Images -->
-    <input type="file" id="global-image-input" accept="image/*" class="hidden">
+    <!-- Global Image Input -->
+    <input type="file" id="imageInput" accept="image/*" class="hidden">
 
-    <!-- Scripts -->
-    <script src="main.js"></script>
+    <script src="firebase-config.js"></script>
+    <script type="module" src="src/main.js"></script>
 </body>
 </html>

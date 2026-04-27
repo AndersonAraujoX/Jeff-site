@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permite que qualquer usuário autenticado (incluindo anônimos) leia e edite o site
+    match /sites/main-site {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Mantém o restante das suas regras...
+    match /{document=**} {
+      allow read, write: if false; // Bloqueio padrão por segurança
+    }
+  }
+}
