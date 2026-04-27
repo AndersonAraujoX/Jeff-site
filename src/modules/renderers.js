@@ -3,7 +3,7 @@
 const renderItemControls = (moduleId, arrayKey, idx, isEditing, isFirst, isLast) => {
     if (!isEditing) return '';
     return `
-        <div class="absolute top-2 right-2 flex gap-1 bg-black/80 rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+        <div class="absolute top-2 right-2 flex gap-1 bg-black/90 rounded p-1 z-20 border border-white/10 shadow-lg">
             ${!isFirst ? `<button onclick="Actions.moveArrayItem('${moduleId}', '${arrayKey}', ${idx}, -1)" class="p-1 hover:text-white text-rpg-cyan" title="Mover para Esquerda/Cima">←</button>` : ''}
             ${!isLast ? `<button onclick="Actions.moveArrayItem('${moduleId}', '${arrayKey}', ${idx}, 1)" class="p-1 hover:text-white text-rpg-cyan" title="Mover para Direita/Baixo">→</button>` : ''}
             <button onclick="Actions.deleteArrayItem('${moduleId}', '${arrayKey}', ${idx})" class="p-1 hover:text-red-400 text-rpg-cyan ml-2" title="Deletar Item">✕</button>

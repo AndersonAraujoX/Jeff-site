@@ -39,10 +39,10 @@ export const Render = {
     },
 
     controls: (id) => `
-        <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/module:opacity-100 transition-opacity z-50">
-            <button onclick="Actions.moveModule('${id}', -1)" class="p-2 bg-rpg-black border border-rpg-cyan/20 text-rpg-cyan rounded hover:bg-rpg-cyan/10">↑</button>
-            <button onclick="Actions.moveModule('${id}', 1)" class="p-2 bg-rpg-black border border-rpg-cyan/20 text-rpg-cyan rounded hover:bg-rpg-cyan/10">↓</button>
-            <button onclick="Actions.deleteModule('${id}')" class="p-2 bg-red-900/40 border border-red-500/40 text-red-500 rounded hover:bg-red-500/20">×</button>
+        <div class="absolute top-4 right-4 flex gap-2 z-50 bg-rpg-black/80 p-1 rounded border border-rpg-cyan/20 shadow-lg">
+            <button onclick="Actions.moveModule('${id}', -1)" class="p-2 bg-rpg-black text-rpg-cyan rounded hover:bg-rpg-cyan/20 transition-colors" title="Mover para cima">↑</button>
+            <button onclick="Actions.moveModule('${id}', 1)" class="p-2 bg-rpg-black text-rpg-cyan rounded hover:bg-rpg-cyan/20 transition-colors" title="Mover para baixo">↓</button>
+            <button onclick="Actions.deleteModule('${id}')" class="p-2 bg-rpg-black text-red-500 rounded hover:bg-red-500/20 transition-colors" title="Deletar módulo">✕</button>
         </div>
     `,
 
