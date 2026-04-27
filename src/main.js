@@ -4,10 +4,8 @@ import { Store } from './core/store.js';
 import { Render } from './ui/interface.js';
 import { state, context } from './core/state.js';
 
-const auth = firebase.auth();
-
 function init() {
-    auth.signInAnonymously()
+    firebase.auth().signInAnonymously()
         .then(() => {
             console.log("RPG Site: Modular & Connected.");
             Store.listen(() => Render.all());
