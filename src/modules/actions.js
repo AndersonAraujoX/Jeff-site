@@ -25,6 +25,17 @@ export const Actions = {
         Store.save().then(() => Render.all());
     },
 
+    changeBackground: (color) => {
+        state.settings.backgroundColor = color;
+        Store.save().then(() => Render.all());
+    },
+
+    changeBackgroundImage: () => {
+        const url = prompt("Cole a URL da imagem de fundo (ou deixe vazio para remover):", state.settings.backgroundImage);
+        state.settings.backgroundImage = url || '';
+        Store.save().then(() => Render.all());
+    },
+
     // --- Page Management ---
     createPage: () => {
         const title = prompt("Nome da nova página:");

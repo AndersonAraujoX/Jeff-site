@@ -4,7 +4,11 @@ export const state = {
     pages: {}, 
     currentPage: 'home',
     sidebarTab: 'pages', // 'pages' or 'modules'
-    settings: { primaryColor: '#66FCF1' }
+    settings: { 
+        primaryColor: '#66FCF1',
+        backgroundColor: '#0B0C10',
+        backgroundImage: 'https://www.transparenttextures.com/patterns/dark-matter.png'
+    }
 };
 
 // Getter utilitário para facilitar o acesso à página atual

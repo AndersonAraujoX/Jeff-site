@@ -14,6 +14,10 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    background-size: auto;
+    background-attachment: fixed;
+    background-repeat: repeat;
+    transition: background-color 0.5s ease;
 }
 
 h1, h2, h3, h4 {

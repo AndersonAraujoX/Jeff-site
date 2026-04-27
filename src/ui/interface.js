@@ -5,11 +5,20 @@ import { ModuleRenderers } from '../modules/renderers.js';
 export const Render = {
     all: () => {
         // Apply settings
-        if (state.settings && state.settings.primaryColor) {
-            document.documentElement.style.setProperty('--primary-color', state.settings.primaryColor);
-            const picker = document.getElementById('primary-color-picker');
-            if (picker && picker.value !== state.settings.primaryColor) {
-                picker.value = state.settings.primaryColor;
+        if (state.settings) {
+            if (state.settings.primaryColor) {
+                document.documentElement.style.setProperty('--primary-color', state.settings.primaryColor);
+            }
+            if (state.settings.backgroundColor) {
+                document.body.style.backgroundColor = state.settings.backgroundColor;
+            }
+            if (state.settings.backgroundImage) {
+                document.body.style.backgroundImage = `url('${state.settings.backgroundImage}')`;
+                // Se for uma URL do Unsplash ou similar, usa cover, senão (patterns) usa auto
+                const isFullImg = state.settings.backgroundImage.includes('unsplash') || state.settings.backgroundImage.includes('images.');
+                document.body.style.backgroundSize = isFullImg ? 'cover' : 'auto';
+            } else {
+                document.body.style.backgroundImage = 'none';
             }
         }
 
@@ -105,13 +114,34 @@ export const Render = {
                                 <span class="w-1 h-1 bg-rpg-cyan/30 rounded-full"></span>
                                 Estética do Universo
                             </h3>
-                            <div class="flex items-center gap-4 bg-black/40 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors shadow-xl">
-                                <div class="flex-grow flex flex-col">
-                                    <span class="text-xs font-bold text-rpg-silver">Cor Primária</span>
-                                    <span class="text-[9px] text-rpg-silver/30 uppercase">Interface & Destaques</span>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-4 bg-black/40 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors shadow-xl">
+                                    <div class="flex-grow flex flex-col">
+                                        <span class="text-xs font-bold text-rpg-silver">Cor Primária</span>
+                                        <span class="text-[9px] text-rpg-silver/30 uppercase">Interface & Destaques</span>
+                                    </div>
+                                    <input type="color" onchange="Actions.changeColor(this.value)" value="${state.settings.primaryColor || '#66FCF1'}" 
+                                        class="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer shadow-lg">
                                 </div>
-                                <input type="color" onchange="Actions.changeColor(this.value)" value="${state.settings.primaryColor || '#66FCF1'}" 
-                                    class="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer shadow-lg">
+
+                                <div class="flex items-center gap-4 bg-black/40 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors shadow-xl">
+                                    <div class="flex-grow flex flex-col">
+                                        <span class="text-xs font-bold text-rpg-silver">Cor do Fundo</span>
+                                        <span class="text-[9px] text-rpg-silver/30 uppercase">Base do Site</span>
+                                    </div>
+                                    <input type="color" onchange="Actions.changeBackground(this.value)" value="${state.settings.backgroundColor || '#0B0C10'}" 
+                                        class="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer shadow-lg">
+                                </div>
+
+                                <button onclick="Actions.changeBackgroundImage()" class="w-full flex items-center gap-4 bg-black/40 p-4 rounded-2xl border border-white/5 hover:border-rpg-cyan/20 transition-all shadow-xl group">
+                                    <div class="flex-grow flex flex-col text-left">
+                                        <span class="text-xs font-bold text-rpg-silver group-hover:text-rpg-cyan transition-colors">Imagem de Fundo</span>
+                                        <span class="text-[9px] text-rpg-silver/30 uppercase truncate max-w-[150px]">${state.settings.backgroundImage ? 'Ativa' : 'Nenhuma imagem'}</span>
+                                    </div>
+                                    <div class="p-2 bg-white/5 rounded-lg group-hover:bg-rpg-cyan/10 transition-colors">
+                                        <svg class="w-4 h-4 text-rpg-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                </button>
                             </div>
                         </section>
 
