@@ -20,6 +20,11 @@ export const Actions = {
         Render.all();
     },
 
+    switchSidebarTab: (tab) => {
+        state.sidebarTab = tab;
+        Render.sidebar();
+    },
+
     changeColor: (color) => {
         state.settings.primaryColor = color;
         Store.save().then(() => Render.all());
