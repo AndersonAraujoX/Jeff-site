@@ -4,6 +4,15 @@ import { ModuleRenderers } from '../modules/renderers.js';
 
 export const Render = {
     all: () => {
+        // Apply settings
+        if (state.settings && state.settings.primaryColor) {
+            document.documentElement.style.setProperty('--color-primary', state.settings.primaryColor);
+            const picker = document.getElementById('primary-color-picker');
+            if (picker && picker.value !== state.settings.primaryColor) {
+                picker.value = state.settings.primaryColor;
+            }
+        }
+
         Render.page();
         Render.sidebar();
         Render.navbar();

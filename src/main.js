@@ -2,7 +2,7 @@
 import { Actions } from './modules/actions.js';
 import { Store } from './core/store.js';
 import { Render } from './ui/interface.js';
-import { state, context } from './core/state.js';
+import { state, context, getActiveModules } from './core/state.js';
 
 function init() {
     firebase.auth().signInAnonymously()
@@ -24,7 +24,7 @@ function setupImageHandler() {
             const reader = new FileReader();
             reader.onload = (event) => {
                 const base64 = event.target.result;
-                const mod = state.modules.find(m => m.id === context.currentImageTarget.id);
+                const mod = getActiveModules().find(m => m.id === context.currentImageTarget.id);
                 if (mod) {
                     const { key, idx, subKey } = context.currentImageTarget;
                     if (idx !== null) {

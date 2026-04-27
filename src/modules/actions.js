@@ -15,6 +15,11 @@ export const Actions = {
         Render.all();
     },
 
+    changeColor: (color) => {
+        state.settings.primaryColor = color;
+        Store.save().then(() => Render.all());
+    },
+
     // --- Page Management ---
     createPage: () => {
         const title = prompt("Nome da nova página:");
