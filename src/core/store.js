@@ -17,7 +17,7 @@ export const Store = {
 
     listen: (callback) => {
         getDb().doc(DOC_PATH).onSnapshot(doc => {
-            if (doc.exists()) {
+            if (doc.exists) {
                 const data = doc.data();
                 state.modules = data.modules || [];
                 state.settings = data.settings || state.settings;
