@@ -124,3 +124,18 @@ body.is-editing .module-wrapper:hover {
 .loading-text {
     animation: pulse-cyan 1.5s infinite;
 }
+
+/* Custom Scrollbar for Sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2); 
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(102, 252, 241, 0.3); 
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 252, 241, 0.6); 
+}
