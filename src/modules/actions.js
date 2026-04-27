@@ -6,6 +6,14 @@ import { Render } from '../ui/interface.js';
 export const Actions = {
     // --- UI Controls ---
     toggleEdit: () => {
+        if (!state.isEditing) {
+            const pwd = prompt("Acesso restrito. Digite a senha:");
+            if (pwd !== "02yU/+Q71I@9") {
+                alert("Senha incorreta!");
+                return;
+            }
+        }
+
         state.isEditing = !state.isEditing;
         document.body.classList.toggle('editing-mode', state.isEditing);
         const sidebar = document.getElementById('editor-sidebar');
