@@ -21,6 +21,9 @@ const saveBtn = document.getElementById('save-local');
 const exportBtn = document.getElementById('export-html');
 const editableTexts = document.querySelectorAll('.editable-text');
 const imageBtns = document.querySelectorAll('.image-editor-btn');
+const globalImageInput = document.getElementById('global-image-input');
+
+let currentImageTarget = null;
 
 // --- Initialization ---
 function init() {
@@ -74,19 +77,33 @@ function setupEventListeners() {
                     state.content[`link-${targetId}`] = newUrl;
                 }
             } else {
-                const currentSrc = targetEl.tagName === 'IMG' ? targetEl.src : targetEl.style.backgroundImage.slice(5, -2);
-                const newUrl = prompt('Digite a URL da nova imagem:', currentSrc);
-                
-                if (newUrl) {
-                    if (targetEl.tagName === 'IMG') {
-                        targetEl.src = newUrl;
-                    } else {
-                        targetEl.style.backgroundImage = `url('${newUrl}')`;
-                    }
-                    state.content[`img-${targetId}`] = newUrl;
-                }
+                // Open File Picker
+                currentImageTarget = targetId;
+                globalImageInput.click();
             }
         });
+    });
+
+    // File Input Handler
+    globalImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && currentImageTarget) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64Image = event.target.result;
+                const targetEl = document.getElementById(currentImageTarget);
+                
+                if (targetEl.tagName === 'IMG') {
+                    targetEl.src = base64Image;
+                } else {
+                    targetEl.style.backgroundImage = `url('${base64Image}')`;
+                }
+                
+                state.content[`img-${currentImageTarget}`] = base64Image;
+                e.target.value = ''; // Reset input
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
