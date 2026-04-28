@@ -32,7 +32,18 @@ export const ModuleRenderers = {
                 <h1 ${editAttrs(m.id, 'title', isEditing)} class="text-6xl md:text-8xl font-bold text-white mb-4 tracking-tighter uppercase italic">${m.title}</h1>
                 <p ${editAttrs(m.id, 'subtitle', isEditing)} class="text-xl md:text-2xl text-rpg-cyan tracking-[0.3em] font-light uppercase">${m.subtitle}</p>
             </div>
-            ${isEditing ? `<button onclick="Actions.triggerUpload('${m.id}', 'image')" class="absolute bottom-10 right-10 bg-rpg-cyan/20 hover:bg-rpg-cyan/40 text-rpg-cyan px-4 py-2 rounded-full border border-rpg-cyan/40 text-sm transition-all">Trocar Fundo</button>` : ''}
+            ${isEditing ? `
+                <div class="absolute bottom-10 right-10 flex gap-2">
+                    <button onclick="Actions.triggerUpload('${m.id}', 'image')" class="bg-rpg-black/60 hover:bg-rpg-cyan/20 text-rpg-cyan p-3 rounded-xl border border-rpg-cyan/20 transition-all flex items-center gap-2 text-xs font-bold shadow-2xl backdrop-blur-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        UPLOAD
+                    </button>
+                    <button onclick="Actions.changeHeroImage('${m.id}')" class="bg-rpg-black/60 hover:bg-rpg-cyan/20 text-rpg-cyan p-3 rounded-xl border border-rpg-cyan/20 transition-all flex items-center gap-2 text-xs font-bold shadow-2xl backdrop-blur-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 035.656 5.656l-1.101 1.101"></path></svg>
+                        URL
+                    </button>
+                </div>
+            ` : ''}
         </section>
     `,
     text: (m, isEditing) => `

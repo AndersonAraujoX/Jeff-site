@@ -152,6 +152,17 @@ export const Actions = {
         document.getElementById('imageInput').click();
     },
 
+    changeHeroImage: (id) => {
+        const mod = findMod(id);
+        if (mod) {
+            const url = prompt("Cole a URL da nova imagem para o cabeçalho:", mod.image);
+            if (url) {
+                mod.image = url;
+                Store.save().then(() => Render.all());
+            }
+        }
+    },
+
     // --- Notepad Specific ---
     switchNotepadTab: (id, tabIdx) => {
         const mod = findMod(id);
